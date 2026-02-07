@@ -42,27 +42,37 @@ export default {
                 return json(result);
             }
 
+            // 获取歌曲（保持原样，返回 JSON）
             if (pathname === "/song") {
                 const id = p.get("id");
+                const quality = p.get("quality") || "standard";
+
                 if (!id) return json({ error: "id required" }, 400);
-            
+
+                const song = await api.getSong(id, quality);
+                return json(song);
+            }
+
+            // 新增：流式转发网易云 mp3
+            if (pathname === "/stream") {
+                const id = p.get("id");
+                if (!id) return json({ error: "id required" }, 400);
+
                 const mp3Url = `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
-            
+
                 try {
                     const res = await fetch(mp3Url, {
                         method: "GET",
                         redirect: "follow"
                     });
-            
-                    // 如果网易云返回 404，仍然返回 JSON 错误
+
                     if (!res.ok) {
                         return json({
                             error: "netease_error",
                             status: res.status
                         }, 500);
                     }
-            
-                    // 流式转发 mp3
+
                     return new Response(res.body, {
                         status: 200,
                         headers: {
@@ -70,15 +80,15 @@ export default {
                             "access-control-allow-origin": "*"
                         }
                     });
-            
+
                 } catch (e) {
                     return json({
-                        error: "fetch_failed",
+                        error: "stream_failed",
                         detail: e.message
                     }, 500);
                 }
             }
-            
+
             // 获取歌词
             if (pathname === "/lyric") {
                 const id = p.get("id");
