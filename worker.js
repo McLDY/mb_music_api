@@ -50,7 +50,26 @@ export default {
                 if (!id) return json({ error: "id required" }, 400);
 
                 const song = await api.getSong(id, quality);
-                return json(song);
+
+                // 测试 Worker 是否能访问 mp3
+                let testStatus = null;
+
+                if (song.url) {
+                    try {
+                        const testRes = await fetch(song.url, {
+                            method: "HEAD",
+                            redirect: "follow"
+                        });
+                        testStatus = testRes.status;
+                    } catch (e) {
+                        testStatus = "fetch_error";
+                    }
+                }
+
+                return json({
+                    ...song,
+                    testStatus
+                });
             }
 
             // 获取歌词
