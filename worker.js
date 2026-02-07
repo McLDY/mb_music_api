@@ -42,36 +42,43 @@ export default {
                 return json(result);
             }
 
-            // 获取歌曲（APlayer 友好）
             if (pathname === "/song") {
                 const id = p.get("id");
-                const quality = p.get("quality") || "standard";
-
                 if (!id) return json({ error: "id required" }, 400);
-
-                const song = await api.getSong(id, quality);
-
-                // 测试 Worker 是否能访问 mp3
-                let testStatus = null;
-
-                if (song.url) {
-                    try {
-                        const testRes = await fetch(song.url, {
-                            method: "HEAD",
-                            redirect: "follow"
-                        });
-                        testStatus = testRes.status;
-                    } catch (e) {
-                        testStatus = "fetch_error";
+            
+                const mp3Url = `https://music.163.com/song/media/outer/url?id=${id}.mp3`;
+            
+                try {
+                    const res = await fetch(mp3Url, {
+                        method: "GET",
+                        redirect: "follow"
+                    });
+            
+                    // 如果网易云返回 404，仍然返回 JSON 错误
+                    if (!res.ok) {
+                        return json({
+                            error: "netease_error",
+                            status: res.status
+                        }, 500);
                     }
+            
+                    // 流式转发 mp3
+                    return new Response(res.body, {
+                        status: 200,
+                        headers: {
+                            "content-type": "audio/mpeg",
+                            "access-control-allow-origin": "*"
+                        }
+                    });
+            
+                } catch (e) {
+                    return json({
+                        error: "fetch_failed",
+                        detail: e.message
+                    }, 500);
                 }
-
-                return json({
-                    ...song,
-                    testStatus
-                });
             }
-
+            
             // 获取歌词
             if (pathname === "/lyric") {
                 const id = p.get("id");
