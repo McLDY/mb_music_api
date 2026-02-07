@@ -1,10 +1,9 @@
-// 多源加载（CommonJS）
 const bilibili = require("./bilibili.js");
-// 以后你可以继续加：const netease = require("./sources/netease.js");
+const netease = require("./netease.js");
 
 const sources = {
     bilibili,
-    // netease,
+    netease,
 };
 
 function getSource(name) {
