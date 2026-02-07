@@ -20,7 +20,7 @@ module.exports = {
     },
 
     async getSong(id, quality = "standard") {
-        // 先获取视频信息（cid）
+        // 1. 获取视频信息（含 cid）
         const cidRes = await core.getCid(id, null);
         const data = cidRes.data;
 
@@ -34,7 +34,7 @@ module.exports = {
             artwork: data.pic.startsWith("//") ? "https:" + data.pic : data.pic
         };
 
-        // 获取音频 URL
+        // 2. 获取音频 URL（核心）
         const media = await core.getMediaSource(musicItem, quality);
 
         return {
@@ -50,4 +50,3 @@ module.exports = {
         return { raw: "Nothing" };
     }
 };
-
