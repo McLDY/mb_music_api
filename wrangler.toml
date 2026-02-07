@@ -2,5 +2,5 @@ name = "mbma"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
-# ⭐ 新写法：启用 Node.js 兼容层
+# ⭐ 新写法：启用 Node.js 兼容
 compatibility_flags = ["nodejs_compat"]
