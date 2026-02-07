@@ -1,0 +1,6 @@
+name = "mb_music_api"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+# ⭐ 关键：开启 Node.js 兼容层
+node_compat = true
