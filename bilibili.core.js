@@ -514,5 +514,6 @@ module.exports = {
     getTopLists,
     getTopListDetail,
     importMusicSheet,
-    getMusicComments
+    getMusicComments,
+    getCid
 };
